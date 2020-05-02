@@ -1,0 +1,350 @@
+<form>
+  <label>LAN_tst</label>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="dropdown" token="location_selection" searchWhenChanged="false">
+      <label>Location</label>
+      <choice value="*">All</choice>
+      <choice value="in*">Ingolstadt</choice>
+      <choice value="gh*">Gaimersheim</choice>
+      <choice value="ne*">Neckarsulm</choice>
+      <choice value="ks*">Kosching</choice>
+      <choice value="mm*">MunchMunster</choice>
+      <choice value="pn*">Neustadt</choice>
+      <choice value="hn*">Bieberach</choice>
+      <choice value="gm*">Grossmehring</choice>
+      <choice value="nd*">Neuburg</choice>
+      <choice value="nb*">Nuernberg</choice>
+      <choice value="nh*">Manching</choice>
+      <choice value="bh*">Boeckingen</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="time" token="field1" searchWhenChanged="false">
+      <label>Time</label>
+      <default>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <single>
+        <title>Unique hosts - 7 day trend</title>
+        <search>
+          <query>| tstats count FROM datamodel=Cisco_IOS_Event where (nodename = Cisco_IOS_Event) (Cisco_IOS_Event.product=IOS) (host=$location_selection$) BY _time Cisco_IOS_Event.product nodename host |  timechart dc(host) span=d | appendpipe [| stats count | where count=0 | addinfo | eval _time=info_min_time | table _time count]</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">trend</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Events - 7 day trend</title>
+        <search>
+          <query>| tstats count FROM datamodel=Cisco_IOS_Event where (nodename = Cisco_IOS_Event) (Cisco_IOS_Event.product=IOS) (host=$location_selection$) BY _time Cisco_IOS_Event.product nodename host |  timechart sum(count) span=d | appendpipe [| stats count | where count=0 | addinfo | eval _time=info_min_time | table _time count]</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">trend</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Device Diagnostic Messages</title>
+        <search>
+          <query>index=0200-ops_network_dispatcher-lan sourcetype=cisco:ios  mnemonic=KEEPALIVE OR mnemonic=CABLE_EVENT OR mnemonic=LINK_EVENT OR mnemonic=TXQ_LOCKUP_ERROR OR mnemonic=SERVICE_CRASHED OR mnemonic=MALLOCFAIL OR mnemonic=FEX_STATUS OR mnemonic=PFM_SYSTEM_RESET OR mnemonic=FORM_SUBMIT_CSRF_DETECTED OR mnemonic=IM_LC_PURGE_REMIND_COPY_R_S OR mnemonic=EVENT OR mnemonic=CRIT_FAILURE OR mnemonic=BACKUP_NVRAM_OPEN_FAIL OR mnemonic=BACKUP_NV_ACCESS_FAIL OR mnemonic=CFGWRITE_ABORTED OR mnemonic=FILE_OPEN_FAILED OR mnemonic=PLATFORM OR mnemonic=OUT_OF_COMPLIANCE OR mnemonic=SECURITY_ERR_MSG OR mnemonic=TRAP OR mnemonic=SOHMS_DIAG_ERROR OR mnemonic=MSGQ_RUNNING_HIGH OR mnemonic=CHASSISALARM OR mnemonic=NF_USAGE OR mnemonic=TCAM_THRLD OR mnemonic=TRANSCEIVER_DUPLICATE OR mnemonic=TRANSCEIVER_BAD_EEPROM OR mnemonic=FREEMEMLOW OR mnemonic=COLL OR mnemonic=TRAPENTRY OR mnemonic=NOMEMORY OR mnemonic=ABSENT_ALERT OR mnemonic=INPUT_QFULL_ER OR mnemonic=CONFIG_RESOLVE_FAILURE OR mnemonic=MALLOC OR mnemonic=BIG_MEM_ALLOC OR SERVCONF OR mnemonic=SOHMS_DIAG_ERROR OR mnemonic=METRO_MSG1 OR mnemonic=LACP_ERROR  OR mnemonic=ALLDEADSERVER OR mnemonic=COMM_FAILED OR mnemonic=CFGWRITE_FAILED OR mnemonic=SSH_NOT_ALLOWED_ON_THIS_PORT OR kernel OR snmp (host=$location_selection$)
+| stats count by host mnemonic message_text severity_id_and_name
+| rename severity_id_and_name as severity_id
+| sort +severity_id</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Top Interface Flaps</title>
+        <search>
+          <query>index=0200-ops_network_dispatcher-lan sourcetype=cisco:ios eventtype="cisco_ios-port_down" OR eventtype="cisco_ios-port_up" product=IOS (mnemonic=*) (host=$location_selection$)| stats count, latest(vendor_action) AS port_status, latest(mnemonic) AS mnemonic BY host,src_interface | sort -count | table host,src_interface,port_status,mnemonic,count | rename  src_interface as Interface,port_status as Status,host as Host
+| replace "IF_DOWN_PORT_CHANNEL_MEMBERS_DOWN" with CHANNEL_MEMB_DOWN "IF_DOWN_INIT" with IF_INITIALIZING
+| head 10</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Status">
+          <colorPalette type="map">{"down":#DC4E41}</colorPalette>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Interface Errors</title>
+        <search>
+          <query>index=0200-ops_network_dispatcher-lan sourcetype=cisco:ios eventtype=cisco_ios-err_disable OR mnemonic=CONTROLLER_PORT_ERR (host=$location_selection$)
+| eval cause=mvappend(disable_cause, reason)
+| stats count by host, src_interface, disable_cause
+| replace "Power Controller reports power Tstart error detected" with Tstart_error, "Power given, but Power Controller does not report Power Good" with Power_not_good, "Power Controller reports power Imax error detected" With Imax_error
+| sort -count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Top Alarms</title>
+        <search>
+          <query>index=0200-ops_network_dispatcher-lan sourcetype=cisco:ios eventtype=cisco_ios-native_vlan_mismatch OR eventtype=cisco_ios-port_down OR eventtype=cisco_ios-diag OR eventtype=cisco_ios-mac_flapping OR eventtype=cisco_ios-radius OR eventtype=cisco_ios-dhcp_snooping OR eventtype=cisco_ios-stackmgr-port_down OR eventtype=cisco_ios-dhcp_snooping_untrusted_port OR eventtype=cisco_ios-routing-pim OR eventtype=cisco_ios-spanning_tree OR eventtype=cisco_ios-routing-ospf OR mnemonic=CONTROLLER_PORT_ERR NOT ADJCHG (host=$location_selection$)
+| timechart count by mnemonic
+| head 15</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Rare Alarms</title>
+        <search>
+          <query>index=0200-ops_network_dispatcher-lan sourcetype=cisco:ios eventtype=cisco_ios-native_vlan_mismatch OR eventtype=cisco_ios-port_down OR eventtype=cisco_ios-diag OR eventtype=cisco_ios-mac_flapping OR eventtype=cisco_ios-radius OR eventtype=cisco_ios-dhcp_snooping OR eventtype=cisco_ios-stackmgr-port_down OR eventtype=cisco_ios-dhcp_snooping_untrusted_port OR eventtype=cisco_ios-routing-pim OR eventtype=cisco_ios-spanning_tree OR eventtype=cisco_ios-routing-ospf OR mnemonic=CONTROLLER_PORT_ERR  (host=$location_selection$)
+| stats dedup_splitvals=t count AS "Count of Event" by mnemonic
+| sort limit=0 -"Count of Event" 
+| fields - _span 
+| fillnull "Count of Event" 
+| fields mnemonic, "Count of Event" 
+| tail 10</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Temperature Alarms</title>
+        <search>
+          <query>index=0200-ops_network_dispatcher-lan sourcetype=cisco:ios eventtype=* facility=* mnemonic=THERMAL_WARNING OR mnemonic=MOD_TEMPMINALRM OR mnemonic=SECONDARY_OVERTEMP OR mnemonic=THERMAL_CRITICAL OR mnemonic=TEMP_NORMAL OR mnemonic=TEMP OR MOD_TEMPMINALRM OR MOD_TEMPOK OR RPS_THERMAL_WARNING (host=$location_selection$)
+| stats count AS Count, latest(_time) AS _time, latest(severity_id_and_name) AS severity_id latest(message_text) AS message_text latest(mnemonic) AS mnemonic by host
+| table host, mnemonic, Count 
+| rename host as Host, mnemonic as Cause
+| replace MOD_TEMPMINALRM WITH Minor_Temp_Alarm SECONDARY_OVERTEMP WITH Temp_Above_Yellow_Limit THERMAL_WARNING with Temperature_Warning_Threshold
+| sort -Count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="Cause">
+          <colorPalette type="map">{"Temperature_Warning_Threshold":#F8BE34,"Temp_Above_Yellow_Limit":#F1813F,"Minor_Temp_Alarm":#B6C75A}</colorPalette>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Power Supply and Fan Errors</title>
+        <search>
+          <query>index=0200-ops_network_dispatcher-lan sourcetype=cisco:ios mnemonic=FAN_ERROR OR mnemonic=FAN OR mnemonic=FAN_OK OR mnemonic=FAN_NOT_PRESENT OR mnemonic=FRU_PS_ACCESS OR mnemonic=PS_ABSENT OR mnemonic=PS_FAIL OR mnemonic=PSFAIL OR mnemonic=PS_REMOVE OR mnemonic=PS_FOUND OR mnemonic=FRU_PS_SIGNAL_FAULTY OR mnemonic=FRU_PS_SIGNAL_OK OR mnemonic=FRU_PS_SUSTAINED_OVERLOAD_RECOVERY OR PS_CAPACITY_CHANGE OR PS_DETECT OR PS_PWR_INPUT_MISSING OR PS_PWR_INPUT_MISSING OR PS_RED_MODE_RESTORED (host=$location_selection$)
+| stats count AS Count, latest(_time) AS _time, latest(severity_id_and_name) AS severity_id latest(message_text) AS message_text latest(mnemonic) AS mnemonic by host 
+| table host, message_text Count 
+| rename host as Host, message_text as Cause 
+| sort -time</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>CPU Alarms</title>
+        <search>
+          <query>index=0200-ops_network_dispatcher-lan sourcetype=cisco:ios mnemonic=CPUFALLINGTHRESHOLD OR mnemonic=CPURISINGTHRESHOLD OR mnemonic=CPUHOG OR mnemonic=INFORM (host=$location_selection$)
+| stats count by host message_text severity_id_and_name</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Stack Switch Alarms</title>
+        <search>
+          <query>index=0200-ops_network_dispatcher-lan sourcetype=cisco:ios eventtype="cisco_ios-stackmgr-port_up" OR eventtype="cisco_ios-stackmgr-port_down" product=IOS (host=$location_selection$)| stats count, latest(state_to) AS switch_status, latest(mnemonic) AS mnemonic latest(switch_id) As switch_id BY host | sort -count | table host,switch_status, switch_id, count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="switch_status">
+          <colorPalette type="map">{"DOWN":#DC4E41}</colorPalette>
+        </format>
+      </table>
+    </panel>
+  </row>
+</form>
