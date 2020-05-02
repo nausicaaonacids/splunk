@@ -11,16 +11,16 @@
   </fieldset>
   <row>
     <panel>
-      <title>Failed Authentication (Filtered)</title>
       <chart>
+        <title>Failed Authentication</title>
         <search>
-          <query>index=* sourcetype="cisco:ise:syslog" ISEPolicySetName="Device Admin Switch" OR "Admin F5" OR "Admin Checkpoint" OR "Device Admin WLC" eventtype="cisco-ise-guest-authentication-failed"index=* sourcetype="cisco:ise:syslog" eventtype="cisco-ise-failed-authentication" ISEPolicySetName="Device Admin Switch" OR "Admin F5" OR "Admin Checkpoint" OR "Device Admin WLC" eventtype="cisco-ise-guest-authentication-failed" 
+          <query>index=* sourcetype="cisco:ise:syslog" ISEPolicySetName="Device Admin Switch" OR "Admin F5" OR "Admin Checkpoint" OR "Device Admin WLC" eventtype="cisco-ise-guest-authentication-failed"
 | append 
     [ search index=0200-ops_network_dispatcher-lan sourcetype=cisco:ios eventtype=cisco_ios-login_failed] 
 | eval User=mvappend(User,user) 
-| search User!=ucfapv6 User!=ea053zu User!=dbhf3n4 User!=sa6cqx7 User!=sovw9b5 User!=av9t023 User!=tfp5ko6 User!=ub2k1jj User!=e8cbu1f User!= u5aes4c User!=u254icd User!=u9b0n38 User!=adxxzv3 User!=alddflq User!=v08af6t User!=t User!=f3zgxar User!=egznwyd User!=gw1m3no User!=v5tvcro User!=fzcqiup User!=f60t0wj User!=uw3qkmf User!=wgphis1 User!=syfg2s9 User!=tq1vk8g User!=dp0ygpt User!=tq1vk8g User!=gg0o6ly User!=wzcikwv User!=vu3fme2 User!=etbq41a User!=s0weanz User!=ujg12se User!=ufpbmqa User!=wm3wzia User!=gw65cxu User!=szvfny0 User!=F6GQ7NE User!=dbf3n4 User!=eue4ujy User!=vccgjog User!=t8dp6bc User!=ezrafre User!=ex3e331 User!=s2gagi8 User!=ewmfsub User!=1b:66:7a:63:71:69:75:70 User!=tsf96kt User!=75:35:61:65:73:c2:34:63 User!=eex8sph User!=deupjku User!=ghmg5z7 User!=w9405pn User!=a1xvr9v User!=gw1m3on User!=sobw9b5 User!=t1sw1eu User!=tm4oa3y User!=w9yr4y User!=ewmfsb User!=tm4oa3y User!=vr9ya82 User!=vr9ya82 User!=dbhf3n4# User!=ezrfare User!=tm8oa3y User!=fox0kro User!=ujg12e User!=gufydy1 User!=t3pl6zd User!=tm4oa3y User!=gg0o6ly#011 User!=giantk User!=s2gagi81478411836 User!=sovw9b5#02# User!=szvfny09697418615 User!=tsf96kt#02# User!=tsf96kt#02##02#
+| search User!=**
 | eval Fail=mvappend(FailureReason,reason) 
-| replace "13031 TACACS+ authentication request missing user Password" WITH "Missing user password" "11014 RADIUS packet contains invalid attribute(s)" WITH "RADIUS pkt invalid attribute" "13036 Selected Shell Profile is DenyAccess" WITH "Shell Profile DenyAccess" "22040 Wrong password or invalid shared secret" WITH "Wrong pass. or shared secret" "22056 Subject not found in the applicable identity store(s)" WITH "Subject not found identity store" "24508 User authentication failed" WITH "User authentication failed" "13030 TACACS+ authentication request missing a User name" WITH "Missing user name" "15039 Rejected per authorization profile" WITH "Rejected authorization profile" IN Fail
+| replace "13031 TACACS+ authentication request missing user Password" WITH "Missing user password" "11014 RADIUS packet contains invalid attribute(s)" WITH "RADIUS pkt invalid attribute" "13036 Selected Shell Profile is DenyAccess" WITH "Shell Profile DenyAccess" "22040 Wrong password or invalid shared secret" WITH "Wrong pass. or shared secret" "22056 Subject not found in the applicable identity store(s)" WITH "Subject not found identity store" "24508 User authentication failed" WITH "User authentication failed" "13030 TACACS+ authentication request missing a User name" WITH "Missing user name" "15039 Rejected per authorization profile" WITH "Rejected authorization profile" IN Fail 
 | where NOT Fail == "RADIUS pkt invalid attribute"
 | chart count by Fail User limit=0 
 | sort -count</query>
@@ -65,15 +65,15 @@
   </row>
   <row>
     <panel>
-      <title>Machine and Admin login - Ingolstadt (Cisco devices)</title>
       <table>
+        <title>Machine and Admin login - Ingolstadt (Cisco devices)</title>
         <search>
           <query>index=0200-ops_network_dispatcher-lan sourcetype=cisco:ios CONFIG_I OR %AAA-5-AAA_AUTH_ADMIN_USER OR LOGIN_FAILED 
 | rex field=_raw "^[^'\n]*'(?P&lt;User_&gt;\w+)" 
 | eval User=mvappend (User_,user) 
-| search User!=ea053zu User!=dbhf3n4 User!=sa6cqx7 User!=sovw9b5 User!=av9t023 User!=tfp5ko6 User!=ub2k1jj User!=e8cbu1f User!= u5aes4c User!=u254icd User!=u9b0n38 User!=adxxzv3 User!=alddflq User!=v08af6t User!=t User!=f3zgxar User!=egznwyd User!=gw1m3no User!=v5tvcro User!=fzcqiup User!=f60t0wj User!=uw3qkmf User!=wgphis1 User!=syfg2s9 User!=tq1vk8g User!=dp0ygpt User!=tq1vk8g User!=gg0o6ly User!=wzcikwv User!=vu3fme2 User!=etbq41a User!=s0weanz User!=ujg12se User!=ufpbmqa User!=wm3wzia User!=gw65cxu User!=szvfny0 User!=F6GQ7NE User!=dbf3n4 User!=eue4ujy User!=vccgjog User!=t8dp6bc User!=ezrafre User!=ex3e331
+| search User!=ea053zu User!=dbhf3n4 User!=sa6cqx7 User!=sovw9b5 User!=av9t023 User!=tfp5ko6 User!=ub2k1jj User!=e8cbu1f User!= u5aes4c User!=u254icd User!=u9b0n38 User!=adxxzv3 User!=alddflq User!=v08af6t User!=t User!=f3zgxar User!=egznwyd User!=gw1m3no User!=v5tvcro User!=fzcqiup User!=f60t0wj User!=uw3qkmf User!=wgphis1 User!=syfg2s9 User!=tq1vk8g User!=dp0ygpt User!=tq1vk8g User!=gg0o6ly User!=wzcikwv User!=vu3fme2 User!=etbq41a User!=s0weanz User!=ujg12se User!=ufpbmqa User!=wm3wzia User!=gw65cxu User!=szvfny0 User!=F6GQ7NE User!=dbf3n4 User!=eue4ujy User!=vccgjog User!=t8dp6bc User!=ezrafre User!=ex3e331 User!=v5mzb7o User!=ucfapv6 User!=t3pl6zd
 | replace "AAA_AUTH_ADMIN_USER" WITH "AAA Admin User" "CONFIG_I" WITH "Config Command" "LOGIN_FAILED" WITH "Login Failed" "VSHD_SYSLOG_CONFIG_I" WITH "Config Command" IN mnemonic 
-| replace FJ with FJ-admin in User
+| replace FJ with *
 | eval Location=substr(host,1,2) 
 | replace "in" WITH Ingolstadt, is WITH Ingolstadt, gh WITH Ingolstadt, kg WITH Ingolstadt, mm WITH Ingolstadt, nd WITH Ingolstadt, nb WITH Ingolstadt, mh WITH Ingolstadt, ne WITH Neckarsulm, bh with Ingolstadt, pn with Neckarsulm, hn with Ingolstadt hb with Ingolstadt gm with Ingolstadt si with Neckarsulm ta with Neckarsulm b0 with Neckarsulm 17 with Ingolstadt in Location 
 | stats count by User mnemonic Location | where NOT Location == "Neckarsulm"
@@ -83,7 +83,7 @@
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
-        <option name="count">20</option>
+        <option name="count">10</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
@@ -91,18 +91,21 @@
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">false</option>
+        <format type="color" field="User">
+          <colorPalette type="map">{"console":#EC9960}</colorPalette>
+        </format>
       </table>
     </panel>
     <panel>
-      <title>Machine and Admin login - Neckarsulm (Cisco devices)</title>
       <table>
+        <title>Machine and Admin login - Neckarsulm (Cisco devices)</title>
         <search>
           <query>index=0200-ops_network_dispatcher-lan sourcetype=cisco:ios CONFIG_I OR %AAA-5-AAA_AUTH_ADMIN_USER OR LOGIN_FAILED 
 | rex field=_raw "^[^'\n]*'(?P&lt;User_&gt;\w+)" 
 | eval User=mvappend (User_,user) 
-| search User!=ea053zu User!=dbhf3n4 User!=sa6cqx7 User!=sovw9b5 User!=av9t023 User!=tfp5ko6 User!=ub2k1jj User!=e8cbu1f User!= u5aes4c User!=u254icd User!=u9b0n38 User!=adxxzv3 User!=alddflq User!=v08af6t User!=t User!=f3zgxar User!=egznwyd User!=gw1m3no User!=v5tvcro User!=fzcqiup User!=f60t0wj User!=uw3qkmf User!=wgphis1 User!=syfg2s9 User!=tq1vk8g User!=dp0ygpt User!=tq1vk8g User!=gg0o6ly User!=wzcikwv User!=vu3fme2 User!=etbq41a User!=s0weanz User!=ujg12se User!=ufpbmqa User!=wm3wzia User!=gw65cxu User!=szvfny0 User!=F6GQ7NE User!=dbf3n4 User!=eue4ujy User!=vccgjog User!=t8dp6bc User!=ezrafre User!=ex3e331
+| search User!=*
 | replace "AAA_AUTH_ADMIN_USER" WITH "AAA Admin User" "CONFIG_I" WITH "Config Command" "LOGIN_FAILED" WITH "Login Failed" "VSHD_SYSLOG_CONFIG_I" WITH "Config Command" IN mnemonic 
-| replace FJ with FJ-admin in User
+| replace FJ *
 | eval Location=substr(host,1,2) 
 | replace "in" WITH Ingolstadt, is WITH Ingolstadt, gh WITH Ingolstadt, kg WITH Ingolstadt, mm WITH Ingolstadt, nd WITH Ingolstadt, nb WITH Ingolstadt, mh WITH Ingolstadt, ne WITH Neckarsulm, bh with Ingolstadt, pn with Neckarsulm, hn with Ingolstadt hb with Ingolstadt gm with Ingolstadt si with Neckarsulm ta with Neckarsulm b0 with Neckarsulm 17 with Ingolstadt in Location 
 | stats count by User mnemonic Location | where NOT Location == "Ingolstadt"
@@ -119,6 +122,9 @@
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">false</option>
+        <format type="color" field="User">
+          <colorPalette type="map">{"console":#F8BE34}</colorPalette>
+        </format>
       </table>
     </panel>
   </row>
@@ -128,14 +134,14 @@
         <title>Fortinet Login</title>
         <search>
           <query>index=0200-ops_network_dispatcher-fortinet Login 
-| replace ghmg5z7 with User wb0lvfi with User ujg12se with User ex3e331 with User wvdjgrc with User ex3e331 with User w77yyua with User tq1vk8g with User vr9ya82 with User ttppri with User tnessino with tnes_user tnesfino with tnes_user tnesfneo with tnes_user tnesfnep with tnes_user tnesfinp with tnes_user
+| replace *
 | stats count by user status reason
 | sort -count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
-        <option name="count">20</option>
+        <option name="count">10</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
@@ -151,21 +157,22 @@
         <search>
           <query>index=0200-ops_network_dispatcher-checkpoint login 
 | where NOT operation == "Log Out" 
-| replace giantku with User gttpdrk with User tubfrz9 with User a3uebcr with User a3uebcr with User ujg12se with User w2gcwdv with User apii52j with User ghmg5z7 with User sovw9b5 with User tm4oa3y with User ahp7bag with User eex8sph with User fox0kro with User wb0lvfi with User deso5hs with User ewhu2g2 with User dra5mf6 with User eex5my8 with User e51184u with User t4bench with User g6g1nx2 with User ani542k with User exaschj with User g8w80mt with User gx7ncfa with User t001j5l with User tscand with User foxtjod with User fox0sra with User ehd7vlk with User ehd7vlk with User egznwyd with User ea053zu with User amike79 with User FOX0KRO with User w77yyua with User tmmpre with User amxxjx2 with User tdry6l2 with User ggn7sul with User t001fg5 with User dominic.wenig with User
+| replace *
 | where NOT operation == "Modify Object"
 | where NOT operation == "Create Section"
 | where NOT operation == "Create Rule"
 | where NOT operation == "Set Session Description"
 | stats count by administrator operation product 
 | sort -count</query>
-          <earliest>-1mon@mon</earliest>
-          <latest>@mon</latest>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
-        <option name="count">20</option>
+        <option name="count">10</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">false</option>
@@ -178,17 +185,18 @@
         <title>Load Balancer Login</title>
         <search>
           <query>index=0200-ops_network_dispatcher-lb authenticated 
-| where NOT User_ == "192"
-| where NOT User_ == "10"
-| where NOT User_== "143"
-| where NOT User_== "user"
-| where NOT User_ == "AUTHCACHE"
+| where NOT User_ == "192" 
+| where NOT User_ == "10" 
+| where NOT User_== "143" 
+| where NOT User_== "user" 
+| where NOT User_ == "AUTHCACHE" 
+| replace *
 | stats count by User_</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
-        <option name="count">20</option>
+        <option name="count">10</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
@@ -196,6 +204,9 @@
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">false</option>
+        <format type="color" field="User_">
+          <colorPalette type="map">{"admion":#F8BE34}</colorPalette>
+        </format>
       </table>
     </panel>
     <panel>
@@ -206,12 +217,13 @@
 | eval Location=substr(host,1,2) 
 | replace "in" with Ingolstadt "gy" with Gyor in Location
 | stats count by User_ Location
+| replace *
 | sort -count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
-        <option name="count">20</option>
+        <option name="count">10</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
